@@ -2,7 +2,7 @@
 
 ## Step 1: Clone the Repository
 ```bash
-git clone github.com/mismaeelqazi/WackyBanana.git
+git clone https://github.com/mismaeelqazi/WackyBanana.git
 ```
 
 ## Step 2: Install Dependencies
