@@ -3,6 +3,7 @@
 ## Step 1: Clone the Repository
 ```bash
 git clone https://github.com/mismaeelqazi/WackyBanana.git
+cd WackyBanana
 ```
 
 ## Step 2: Install Dependencies
@@ -10,7 +11,7 @@ git clone https://github.com/mismaeelqazi/WackyBanana.git
 pip install -r requirements.txt
 ```
 
-## Step 3: Run the Script
+## Step 3: Run the Scriptgit 
 ```bash
 python banana.py
 ```
