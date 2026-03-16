@@ -1,9 +1,14 @@
 import numpy, soundfile
 import os,requests 
 
+Choice = input("Do you want the regular Banana or upload Custom Image(B or C):")
+if Choice.upper() == "B":
+    FileBase = "Banana"
+elif Choice.upper() == "C":
+    FileBase = input("Enter the file Name:")
 
 ScriptFolder = os.path.dirname(os.path.abspath(__file__))
-ImagePath = os.path.join(ScriptFolder, "Banana.png")
+ImagePath = os.path.join(ScriptFolder, FileBase + ".png")
 # Not Putting JWT here because it needs to be anonymous but if we do it will upload
 PinataJWT = ""
 
@@ -50,7 +55,7 @@ def Encoder():
     AudioWaveform = numpy.concatenate(AudioSegments)
     AudioWaveform = AudioWaveform/ numpy.max(numpy.abs(AudioWaveform))
     soundfile.write(
-        "Banana.wav",
+        FileBase + ".wav",
         AudioWaveform,SampleRate
     )
 
@@ -89,7 +94,7 @@ def Decoder():
         return (min(ActiveMags) + max(InactiveMags)) / 2
 
     # ---------------------- Main Program ------------------------
-    AudioWaveform, SR = soundfile.read("Banana.wav")
+    AudioWaveform, SR = soundfile.read(FileBase + ".wav")
     if SR != SampleRate:
         raise ValueError(f"Unexpected sample rate: {SR}, expected {SampleRate}")
 
@@ -122,7 +127,7 @@ def Decoder():
     if len(ImageBytes) < ImageSize:
         raise ValueError(f"Incomplete data: got {len(ImageBytes)}/{ImageSize} bytes")
 
-    OutputPath = os.path.join(ScriptFolder, "Banana_Decoded.png")
+    OutputPath = os.path.join(ScriptFolder, "Recovered.png")
     with open(OutputPath, "wb") as OutputFile:
         OutputFile.write(ImageBytes)
 
@@ -133,14 +138,14 @@ def UploadToPinata(FilePath):
         Response = requests.post(
             "https://api.pinata.cloud/pinning/pinFileToIPFS",
             headers={"Authorization": f"Bearer {PinataJWT}"},
-            files={"file": ("Banana.wav", AudioFile, "audio/wav")},
+            files={"file": ("Recovered.wav", AudioFile, "audio/wav")},
             data={"pinataMetadata": '{"name": "Banana"}'}
         )
     ContentId = Response.json()["IpfsHash"]
     print(f"Stored on IPFS! CID: {ContentId}")
     return ContentId
 
-def DownloadFromIPFS(ContentId, SavePath="Banana.wav"):
+def DownloadFromIPFS(ContentId, SavePath= "Recovered.wav"):
     Response = requests.get(
         f"https://gateway.pinata.cloud/ipfs/{ContentId}",
         stream=True
@@ -152,13 +157,18 @@ def DownloadFromIPFS(ContentId, SavePath="Banana.wav"):
             AudioFile.write(Chunk)
     print(f"Retrieved to {SavePath}")
 
+
+if Choice.upper() == "B":
+    CID = "bafybeicdbpzmknwo2lvmmqq6wplqxabj7ae43iukftmjzz6kgjjho5lhd4"
+else:
+    CID = input("Enter the CID:")
+
 Choice = input("Do you want to store the banana or retrieve(S or R), anything other than that to exit:")
 if Choice.lower() == "s":
+    PinataJWT = input("Enter Your pinata JWT here:")
     Encoder()
-    if PinataJWT != "":
-        UploadToPinata()
+    UploadToPinata()
 elif Choice.lower() == "r":
-    CID = "bafybeicdbpzmknwo2lvmmqq6wplqxabj7ae43iukftmjzz6kgjjho5lhd4"
     DownloadFromIPFS(CID,)
     Decoder()
 else:
