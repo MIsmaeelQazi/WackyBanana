@@ -21,11 +21,13 @@ jobs:
       run: pip install pyinstaller
     - name: Build executable
       run: pyinstaller --onefile Banana.py
+    - name: Rename executable
+      run: mv dist/Banana dist/banana_linux
     - name: Upload executable
       uses: actions/upload-artifact@v4
       with:
         name: Banana-linux
-        path: dist/Banana
+        path: dist/banana_linux
 
   build-windows:
     runs-on: windows-latest
@@ -41,11 +43,13 @@ jobs:
       run: pip install pyinstaller
     - name: Build executable
       run: pyinstaller --onefile Banana.py
+    - name: Rename executable
+      run: mv dist/Banana.exe dist/banana_windows.exe
     - name: Upload executable
       uses: actions/upload-artifact@v4
       with:
         name: Banana-windows
-        path: dist/Banana.exe
+        path: dist/banana_windows.exe
 
   build-macos:
     runs-on: macos-latest
@@ -61,8 +65,10 @@ jobs:
       run: pip install pyinstaller
     - name: Build executable
       run: pyinstaller --onefile Banana.py
+    - name: Rename executable
+      run: mv dist/Banana dist/banana_macos
     - name: Upload executable
       uses: actions/upload-artifact@v4
       with:
         name: Banana-macos
-        path: dist/Banana
+        path: dist/banana_macos
