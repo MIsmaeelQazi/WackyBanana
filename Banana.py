@@ -1,11 +1,13 @@
 import numpy, soundfile
-import os,requests 
+import os,requests,sys
 
 Choice = input("Do you want the regular Banana or upload Custom Image(B or C):")
 if Choice.upper() == "B":
     FileBase = "Banana"
 elif Choice.upper() == "C":
     FileBase = input("Enter the file Name:")
+else:
+    sys.exit("Invalid choice")
 
 ScriptFolder = os.path.dirname(os.path.abspath(__file__))
 ImagePath = os.path.join(ScriptFolder, FileBase + ".png")
@@ -138,7 +140,7 @@ def UploadToPinata(FilePath):
         Response = requests.post(
             "https://api.pinata.cloud/pinning/pinFileToIPFS",
             headers={"Authorization": f"Bearer {PinataJWT}"},
-            files={"file": ("Recovered.wav", AudioFile, "audio/wav")},
+            files={"file": (os.path.basename(FilePath), AudioFile, "audio/wav")},
             data={"pinataMetadata": '{"name": "Banana"}'}
         )
     ContentId = Response.json()["IpfsHash"]
@@ -168,8 +170,11 @@ if Choice.lower() == "s":
     PinataJWT = input("Enter Your pinata JWT here:")
     Encoder()
     UploadToPinata()
+    print("Upload successful.")
 elif Choice.lower() == "r":
     DownloadFromIPFS(CID,)
     Decoder()
+    print("Retrieval and decoding successful.")
 else:
-    pass
+    print("Exiting.")
+input("Press Enter to exit.")
